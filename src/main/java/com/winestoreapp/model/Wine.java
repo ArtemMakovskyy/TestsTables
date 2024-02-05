@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -37,7 +38,6 @@ public class Wine {
     @Column(nullable = false)
     private String name;
 
-    // TODO: 01.02.2024  delete check for null. need to think
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "wine_ratings", joinColumns = @JoinColumn(name = "wine_id"))
     @Column(name = "rating")
@@ -74,10 +74,12 @@ public class Wine {
     private String gastronomy;
     private String description;
 
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
-
     @Lob
     @Column(name = "picture", columnDefinition = "LONGBLOB")
     private byte[] picture;
+
+    private URL pictureLink;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 }

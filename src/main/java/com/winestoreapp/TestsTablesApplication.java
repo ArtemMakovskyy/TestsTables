@@ -1,5 +1,7 @@
 package com.winestoreapp;
 
+import com.winestoreapp.service.WineService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
