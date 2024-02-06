@@ -4,6 +4,7 @@ import com.winestoreapp.model.Order;
 import com.winestoreapp.model.OrderDeliveryInformation;
 import com.winestoreapp.model.OrderPaymentStatus;
 import com.winestoreapp.model.PurchaseObject;
+import com.winestoreapp.model.Review;
 import com.winestoreapp.model.ShoppingCard;
 import com.winestoreapp.model.User;
 import com.winestoreapp.model.Wine;
@@ -12,10 +13,11 @@ import com.winestoreapp.model.WineType;
 import com.winestoreapp.repository.OrderDeliveryInformationRepository;
 import com.winestoreapp.repository.OrderRepository;
 import com.winestoreapp.repository.PurchaseObjectRepository;
+import com.winestoreapp.repository.ReviewRepository;
 import com.winestoreapp.repository.ShoppingCardRepository;
 import com.winestoreapp.repository.UserRepository;
-import com.winestoreapp.service.WineService;
-import jakarta.annotation.PostConstruct;
+import com.winestoreapp.repository.WineRepository;
+import com.winestoreapp.service.WineServiceTest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
@@ -24,10 +26,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ByteArrayResource;
@@ -47,28 +49,30 @@ import org.springframework.web.multipart.MultipartFile;
 @Log4j2
 @RequestMapping("/oto")
 public class WineController {
-    private final WineService wineService;
+    private final WineServiceTest wineServiceTest;
     private final UserRepository userRepository;
     private final PurchaseObjectRepository purchaseObjectRepository;
     private final ShoppingCardRepository shoppingCardRepository;
     private final OrderDeliveryInformationRepository orderDeliveryInformationRepository;
     private final OrderRepository orderRepository;
+    private final ReviewRepository reviewRepository;
+    private final WineRepository wineRepository;
 
 
     @GetMapping("/pdb/{id}")
     public ResponseEntity<Resource> getWinePictureDb(@PathVariable Long id) throws IOException {
-        return wineService.getPictureByIdFromDb(id);
+        return wineServiceTest.getPictureByIdFromDb(id);
     }
 
     @GetMapping("/pbp/{id}")
     public ResponseEntity<Resource> getWinePicturePath(@PathVariable Long id) throws IOException {
-        return wineService.getPictureByIdByPath(id);
+        return wineServiceTest.getPictureByIdByPath(id);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Resource> getEmployeePicture(
             @PathVariable Long id) throws IOException {
-        final Wine wineById = wineService.getWineById(id);
+        final Wine wineById = wineServiceTest.getWineById(id);
         if (wineById != null) {
             final byte[] picture = wineById.getPicture();
 
@@ -86,14 +90,14 @@ public class WineController {
     public ResponseEntity<String> addPictureToWine(
             @RequestParam Long id,
             @RequestParam("file") MultipartFile multipartFile) {
-        wineService.addPictureIntoDisc(id, multipartFile);
+        wineServiceTest.addPictureIntoDisc(id, multipartFile);
         return ResponseEntity.ok("download picture by id " + id);
     }
 
-    @PostConstruct
+//    @PostConstruct
     @GetMapping
     public String start() {
-        final Wine wine = wineService.create(
+        final Wine wine = wineServiceTest.create(
                 "wow wine",
                 220.5,
                 "grape",
@@ -110,14 +114,14 @@ public class WineController {
         );
 
         System.out.println(wine);
-        wineService.addRaring(1L, 1);
-        wineService.addRaring(1L, 2);
-        wineService.addRaring(1L, 3);
-        wineService.addRaring(1L, 4);
-        wineService.addRaring(1L, 5);
-        wineService.addRaring(1L, 1);
+        wineServiceTest.addRaring(1L, 1);
+        wineServiceTest.addRaring(1L, 2);
+        wineServiceTest.addRaring(1L, 3);
+        wineServiceTest.addRaring(1L, 4);
+        wineServiceTest.addRaring(1L, 5);
+        wineServiceTest.addRaring(1L, 1);
 
-        final Wine wine2 = wineService.create(
+        final Wine wine2 = wineServiceTest.create(
                 "wow wine2",
                 230.5,
                 "grap2",
@@ -133,10 +137,10 @@ public class WineController {
                 "description2"
         );
         System.out.println(wine2);
-        wineService.addRaring(2L, 5);
-        wineService.addRaring(2L, 5);
-        wineService.addRaring(2L, 5);
-        orderChaneCreating();
+        wineServiceTest.addRaring(2L, 5);
+        wineServiceTest.addRaring(2L, 5);
+        wineServiceTest.addRaring(2L, 5);
+//        orderChaneCreating();
         return "ok";
     }
 
@@ -145,9 +149,50 @@ public class WineController {
         createPurchaseObject1();
         createPurchaseObject2();
         createShoppingCard();
+
         createOrderDeliveryInformation();
         createOrder();
         queries();
+        createTwoReviews();
+        findWineWithReviews();
+        findReiewByWine();
+        dif();
+    }
+    private void dif() {
+        final Order order = orderRepository.findById(1L).get();
+        System.out.println(order.getDeliveryInformation().getOrder().getId());
+    }
+
+    private void findReiewByWine() {
+        final Set<Review> reviews = wineRepository.findById(1L).get().getReviews();
+        final Stream<Integer> integerStream = reviews.stream().map(s -> s.getRating());
+        final Integer collect = integerStream.collect(Collectors.summingInt(Integer::intValue));
+        System.out.println((double)collect/2);
+    }
+
+    private void findWineWithReviews() {
+        final List<Review> all = reviewRepository.findAll();
+        for (int i = 0; i < all.size(); i++) {
+            System.out.println(all.get(i).getId());
+        }
+    }
+
+    private void createTwoReviews() {
+        Review review1 = new Review();
+        review1.setMessage("review message 1");
+        review1.setRating(4);
+        review1.setReviewDate(LocalDate.now());
+//        review1.setUser(userRepository.findById(1L).get());
+        review1.setWine(wineServiceTest.getWineById(1L));
+        reviewRepository.save(review1);
+
+        Review review2 = new Review();
+        review2.setMessage("review message 2");
+        review2.setRating(3);
+        review2.setReviewDate(LocalDate.now());
+//        review2.setUser(userRepository.findById(2L).get());
+        review2.setWine(wineServiceTest.getWineById(1L));
+        reviewRepository.save(review2);
     }
 
     private void queries() {
@@ -164,10 +209,8 @@ public class WineController {
         order.setShoppingCard(shoppingCardRepository.findById(1L).get());
         order.setDeliveryInformation(orderDeliveryInformationRepository.findById(1L).get());
         order.setPaymentStatus(OrderPaymentStatus.CREATED);
-        order.setRegistrationTime(LocalDateTime.now());
-        order.setCompletedTime(new Date());
-        order.setLocalDate(LocalDate.now());
-        order.setLocalTime(LocalTime.now());
+        order.setRegistrationTime(LocalDate.now());
+        order.setCompletedTime(LocalDate.now());
         orderRepository.save(order);
     }
 
@@ -180,7 +223,8 @@ public class WineController {
         orderDeliveryInformation.setApartment(2);
         orderDeliveryInformation.setPhone("05012345678");
         orderDeliveryInformation.setAdditionally("addition info");
-        orderDeliveryInformationRepository.save(orderDeliveryInformation);
+        final OrderDeliveryInformation save = orderDeliveryInformationRepository.save(orderDeliveryInformation);
+//        System.out.println("OrderDeliveryInformation" + save.getOrder().getId());
     }
 
     private void createShoppingCard() {
@@ -199,7 +243,7 @@ public class WineController {
 
     private void createPurchaseObject1() {
         PurchaseObject purchaseObject = new PurchaseObject();
-        final Wine wineById = wineService.getWineById(1L);
+        final Wine wineById = wineServiceTest.getWineById(1L);
         purchaseObject.setWines(wineById);
         purchaseObject.setPrice(wineById.getPrice());
         purchaseObject.setQuantity(1);
@@ -208,7 +252,7 @@ public class WineController {
 
     private void createPurchaseObject2() {
         PurchaseObject purchaseObject = new PurchaseObject();
-        final Wine wineById = wineService.getWineById(2L);
+        final Wine wineById = wineServiceTest.getWineById(2L);
         purchaseObject.setWines(wineById);
         purchaseObject.setPrice(wineById.getPrice());
         purchaseObject.setQuantity(3);
@@ -217,8 +261,18 @@ public class WineController {
 
     private void createUser() {
         User user = new User();
-        user.setName("Anton");
+        user.setFirstName("Anton");
         final User savedUser = userRepository.save(user);
         log.info(savedUser);
+
+        User user2 = new User();
+        user2.setFirstName("Ivan");
+        final User savedUser2 = userRepository.save(user2);
+        log.info(savedUser2);
+
+        User user3 = new User();
+        user3.setFirstName("Petr");
+        final User savedUser3 = userRepository.save(user3);
+        log.info(savedUser3);
     }
 }

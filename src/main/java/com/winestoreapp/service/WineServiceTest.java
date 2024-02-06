@@ -30,30 +30,30 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-public class WineService {
+public class WineServiceTest {
     private static final String SAVE_PATH = "upload/pictures/wine/";
     private final WineRepository wineRepository;
 
     public void addRaring(Long wineId, Integer rating) {
-        final Wine wine = wineRepository.findById(wineId)
-                .orElseThrow(() -> new RuntimeException("Can't get wine by id " + wineId));
-        if (wine.getRatings().isEmpty()) {
-            List<Integer> ratings = new ArrayList<>();
-            wine.setRatings(ratings);
-        }
-        LinkedList<Integer> ratings = new LinkedList<>(wine.getRatings());
-        if (ratings.size() >= 100) {
-            ratings.removeFirst();
-        }
-        ratings.add(rating);
-        final BigDecimal averageRatingScore =
-                BigDecimal.valueOf(
-                        calculateAverageRatingScore(ratings)
-                ).setScale(2, RoundingMode.HALF_UP);
-        wine.setAverageRatingScore(averageRatingScore);
-        wine.setRatings(new ArrayList<>(ratings));
-        Wine save = wineRepository.save(wine);
-        System.out.println(save);
+//        final Wine wine = wineRepository.findById(wineId)
+//                .orElseThrow(() -> new RuntimeException("Can't get wine by id " + wineId));
+//        if (wine.getRatings().isEmpty()) {
+//            List<Integer> ratings = new ArrayList<>();
+//            wine.setRatings(ratings);
+//        }
+//        LinkedList<Integer> ratings = new LinkedList<>(wine.getRatings());
+//        if (ratings.size() >= 100) {
+//            ratings.removeFirst();
+//        }
+//        ratings.add(rating);
+//        final BigDecimal averageRatingScore =
+//                BigDecimal.valueOf(
+//                        calculateAverageRatingScore(ratings)
+//                ).setScale(2, RoundingMode.HALF_UP);
+//        wine.setAverageRatingScore(averageRatingScore);
+//        wine.setRatings(new ArrayList<>(ratings));
+//        Wine save = wineRepository.save(wine);
+//        System.out.println(save);
     }
 
     private double calculateAverageRatingScore(List<Integer> ratings) {
@@ -166,7 +166,7 @@ public class WineService {
         Wine wine = new Wine();
         wine.setName(name);
         List<Integer> ratings = new ArrayList<>();
-        wine.setRatings(ratings);
+//        wine.setRatings(ratings);
         wine.setPrice(BigDecimal.valueOf(price));
         wine.setGrape(grape);
         wine.setDecantation(decantation);

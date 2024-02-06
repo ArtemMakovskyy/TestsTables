@@ -1,8 +1,6 @@
 package com.winestoreapp.model;
 
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -10,13 +8,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,13 +33,16 @@ public class Wine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String vendorCode;
+
     @Column(nullable = false)
     private String name;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "wine_ratings", joinColumns = @JoinColumn(name = "wine_id"))
-    @Column(name = "rating")
-    private List<Integer> ratings = new ArrayList<>();
+    private String shortName;
+
+    @OneToMany(mappedBy = "wine"
+            , fetch = FetchType.EAGER)
+    private Set<Review> reviews;
 
     private BigDecimal averageRatingScore;
 
@@ -82,4 +83,5 @@ public class Wine {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
+
 }

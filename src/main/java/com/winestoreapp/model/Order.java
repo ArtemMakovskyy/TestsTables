@@ -31,21 +31,17 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "order", fetch = FetchType.EAGER)
     @JoinColumn(name = "shopping_card_id")
     private ShoppingCard shoppingCard;
 
-    @OneToOne( fetch = FetchType.EAGER)
-    @JoinColumn(name = "order_delivery_information_id")
+    @OneToOne(mappedBy = "order", fetch = FetchType.EAGER)
+    @JoinColumn(name = "delivery_information_id")
     private OrderDeliveryInformation deliveryInformation;
 
-    private LocalDateTime registrationTime;
+    private LocalDate registrationTime;
 
-    private Date completedTime;
-
-    private LocalDate localDate;
-
-    private LocalTime localTime;
+    private LocalDate completedTime;
 
     @Enumerated(EnumType.STRING)
     private OrderPaymentStatus paymentStatus;
