@@ -1,16 +1,21 @@
 package com.winestoreapp.service;
 
+import com.winestoreapp.interceptor.Interceptor;
 import com.winestoreapp.model.car.Car;
 import com.winestoreapp.model.car.CarModel;
 import com.winestoreapp.model.car.Manufacturer;
 import com.winestoreapp.model.car.SerialNumber;
 import com.winestoreapp.repository.car.CarRepository;
 import com.winestoreapp.repository.car.ManufacturerRepository;
+import javax.faces.bean.RequestScoped;
+import javax.interceptor.Interceptors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Interceptors(Interceptor.class)
+@RequestScoped
 public class CarService {
     private final CarRepository carRepository;
     private final ManufacturerRepository manufacturerRepository;

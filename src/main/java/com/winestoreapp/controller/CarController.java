@@ -55,6 +55,7 @@ public class CarController {
         carService.createCarAndManufacturer1();
         carService.createCarAndManufacturer2();
 //        return carService.createCarAndManufacturer2();
+        System.out.println("car");
         return new Car();
     }
 }
