@@ -23,4 +23,15 @@ public class TransactionTCarService {
         CompletableFuture.allOf(firstIncrease,secondIncrease)
                 .join();
     }
+
+    public void readOnlyTransaction() {
+        var firstIncrease = CompletableFuture.runAsync(() -> {
+//            log.info("Start transaction");
+            carService.readOnlyTransactional();
+//            log.info("End transaction");
+        });
+
+        CompletableFuture.allOf(firstIncrease)
+                .join();
+    }
 }

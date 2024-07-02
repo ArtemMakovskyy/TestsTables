@@ -14,4 +14,9 @@ public class TCarController {
     public void test(){
         transactionTCarService.readAndIncreaseCarPrice();
     }
+
+    @GetMapping("/tcr")
+    public void readOnlyTransaction(){
+        transactionTCarService.readOnlyTransaction();
+    }
 }
