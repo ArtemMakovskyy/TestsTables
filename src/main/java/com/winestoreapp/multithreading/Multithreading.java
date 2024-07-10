@@ -47,6 +47,7 @@ public class Multithreading {
         });
         executorService.shutdown();
 
+
 //      7  Використання CompletableFuture
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             System.out.println("CompletableFuture Потік запущено");
